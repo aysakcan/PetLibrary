@@ -1,0 +1,13 @@
+.features-icons {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.features-icons-icon{
+    justify-content: center;
+}
+
+.link-safe{
+    text-decoration: none;
+    color: white;
+}

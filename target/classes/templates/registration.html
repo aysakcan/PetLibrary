@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.css" rel="stylesheet" type="text/css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-landing-page/5.0.3/css/landing-page.min.css" rel="stylesheet" type="text/css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script>
+
+</head>
+<body>
+<style>
+    .regButton{
+        background-color: white;
+        border-radius: 4px;
+        padding: 5px 20px;
+        font-size: 20px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border: 2px solid #008CBA;
+        float: right;
+    }
+</style>
+<nav class="navbar navbar-light bg-light static-top">
+    <div class="container">
+        <a class="navbar-brand" href="/">App Name</a>
+        <a class="btn btn-primary" href="/login">Sign In</a>
+    </div>
+</nav>
+<section class="call-to-action text-white text-center" style="margin-bottom: 30px;">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-9 mx-auto">
+                <h2 class="mb-4">Registration Now!</h2>
+            </div>
+        </div>
+    </div>
+</section>
+<div style="margin: 0 auto;width: 50%;" >
+<form th:action="@{/registration}"  method="POST" enctype="utf8" class="form-horizontal" >
+    <div class="form-group">
+
+        <input type="text" name="userFirstName" placeholder="FirstName" class="form-control"/>
+       <!-- <p th:text="${error}">Validation error</p>-->
+    </div>
+    <div class="form-group">
+
+        <input type="text" name="userLastName" placeholder="LastName" class="form-control"/>
+        <!--<p th:text="${error}">Validation error</p>-->
+    </div>
+    <div class="form-group">
+
+        <input type="email" name="userEmail" placeholder="Email" class="form-control"/>
+        <!--<p th:text="${error}">Validation error</p>-->
+    </div>
+    <div class="form-group">
+        <input type="password" name="userPassword" id="password" required placeholder="Password" class="form-control"/>
+        <!--<p th:text="${error}">Validation error</p>-->
+    </div>
+
+    <div class="form-group">
+
+        <input type="password" id="confirm_password" required placeholder="Confirm Password" class="form-control"/>
+    </div>
+    <div class="form-check form-check-inline">
+        <label class="form-check-label">Admin &nbsp;</label><input type="radio" class="form-check-input" name="role" value="Admin">
+        <label class="form-check-label">User &nbsp;</label><input type="radio" class="form-check-input" name="role" value="User">
+    </div>
+    <br>
+    <input type="submit" class="regButton" disabled id="reg" value="Register" />
+</form>
+</div>
+<script type="text/javascript">
+    var password = document.getElementById("password"), confirm_password = document.getElementById("confirm_password");
+
+    function validatePassword(){
+        if(password.value != confirm_password.value) {
+            confirm_password.setCustomValidity("Passwords Don't Match");
+            document.getElementById("confirm_password").style.boxShadow = "red 0px 1px 10px 2px";
+
+        } else {
+            confirm_password.setCustomValidity('');
+            document.getElementById("confirm_password").style.boxShadow = "green 0px 1px 10px 2px";
+            document.getElementById("reg").disabled = false;
+        }
+    }
+
+    password.onchange = validatePassword;
+    confirm_password.onkeyup = validatePassword;
+</script>
+</body>
+</html>
