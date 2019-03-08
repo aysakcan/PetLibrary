@@ -29,6 +29,8 @@ public class RegistrationController {
     public String addUser(@RequestParam String userFirstName,
                           @RequestParam String userLastName,
                           @RequestParam String userEmail,
+                          @RequestParam String userPhone,
+                          @RequestParam String userAddress,
                           @RequestParam String userPassword,
                           @RequestParam String role,
                           Map<String,Object> model)
@@ -44,6 +46,8 @@ public class RegistrationController {
                users.setUserEmail(userEmail);
                users.setUserFirstName(userFirstName);
                users.setUserLastName(userLastName);
+               users.setUserPhone(userPhone);
+               users.setUserAddress1(userAddress);
                users.setUserPassword(userPassword);
                if (role.equals("Admin")){users.setRoles(Collections.singleton(Role.ADMIN));}else {users.setRoles(Collections.singleton(Role.USER));}
                users.setActive(true);
@@ -53,6 +57,8 @@ public class RegistrationController {
            userFirstName = null;
            userLastName = null;
            userEmail = null;
+           userPhone = null;
+           userAddress = null;
            userPassword = null;
 
            return "redirect:/login";

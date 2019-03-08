@@ -26,10 +26,14 @@ public class UserController {
 
 
     @GetMapping("main")
-    public String main(@RequestParam(required = false,defaultValue = "") String name, Model model) {
+    public String main(@RequestParam(required = false,defaultValue = "") String name,String type, Model model) {
         Iterable<Users> users;
-        if (name != null && !name.isEmpty()) {
+
+        if(type != null && type.equals("first") && name != null && !name.isEmpty()){
             users = userRepo.findByUserFirstName(name);
+        }
+        else if (type != null && type.equals("last") && name != null && !name.isEmpty()) {
+            users = userRepo.findByUserLastName(name);
         }else{
             users = userRepo.findAll();
         }
@@ -65,19 +69,6 @@ public class UserController {
 
         return "redirect:/main";
     }
-
-   /* @PostMapping("/filter")
-    public String filter(@RequestParam String name, Map<String, Object> model){
-    Iterable<Users> users;
-    if (name != null && !name.isEmpty()) {
-        users = userRepo.findByUserFirstName(name);
-    }else{
-        users = userRepo.findAll();
-    }
-        model.put("users",users);
-
-        return "main";
-    }*/
 
 
     @PostMapping("/updatecity")

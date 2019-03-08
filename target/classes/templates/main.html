@@ -80,8 +80,18 @@
             Find From Users
         </div>
         <form method="get" action="/main" >
-
-            <input type="text" class="form-control" name="filter" placeholder="write FirstName" />
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="name" placeholder="Find" />
+                </div>
+                <div class="col-md-6">
+                    <select id="selectType" class="form-control">
+                        <option value="first">First Name</option>
+                        <option value="last">Last Name</option>
+                    </select>
+                    <input type="hidden" id="selectinput" class="form-control" name="type" value="first"/>
+                </div>
+            </div>
 
             <button type="submit" class="btn btn-success" style="width: 100%!important;">Search</button>
         </form>
@@ -106,7 +116,7 @@
                 <td th:text="${users.userFirstName}+' '+${users.userLastName}" class="name"></td>
                 <td th:text="${users.userCity}" class="city" ></td>
                 <td th:text="${users.userEmail}" class="email"></td>
-                <td class="delete" style="display: none;"><button type="button" class="btn btn-outline-danger">Delete</button></td>
+                <td class="delete"><button type="button" class="btn btn-outline-danger">Delete</button></td>
 
 
             </tr>
@@ -164,8 +174,8 @@
 <script>
 
     $(document).ready(function() {
-        $("tr").not(':first').hover(function(){$(".delete").css("display", "block")},
-            function(){$(".delete").css("display", "none")});
+        /*$("tr").not(':first').hover(function(){$(".delete").css("display", "block")},
+            function(){$(".delete").css("display", "none")});*/
         $(".name").click(function () {
             var id = this.parentNode.id;
             $("#updateName").click(function () {
@@ -265,6 +275,10 @@
                 }
             });
         });
+    });
+
+    $(document).on('change','#selectType',function(){
+        $( "#selectinput" ).val($( "#selectType option:selected" ).val());
     });
 
 </script>

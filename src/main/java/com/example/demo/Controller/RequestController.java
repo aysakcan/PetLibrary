@@ -18,11 +18,6 @@ public class RequestController {
     @Autowired
     private UserRepo userRepo;
 
-    @GetMapping("/second")
-    public String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Model model) {
-        model.addAttribute("name", name);
-        return "second";
-    }
 
     @GetMapping("/login")
     public String login(){

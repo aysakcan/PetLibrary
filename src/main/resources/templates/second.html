@@ -17,20 +17,6 @@
 
 </head>
 <body>
-<style>
-    .call-to-action .overlay {
-        height: 75%;
-    }
-    .outButton{
-        background-color: white;
-        border-radius: 4px;
-        padding: 5px 20px;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-        border: 2px solid #008CBA;
-    }
-</style>
 <nav class="navbar navbar-light bg-light static-top">
     <div class="container">
         <a class="navbar-brand" href="/">App Name</a>
@@ -50,5 +36,274 @@
         </div>
     </div>
 </section>
+<div style="text-align: center; margin-bottom: 20px;">
+    <button type="button" data-tab="tab1" class="btn btn-lg btn-primary tabing">Show All Pets</button>
+    <button type="button" data-tab="tab2" class="btn btn-lg btn-success tabing">Show My Pets</button>
+    <button type="button" data-tab="tab3" class="btn btn-lg btn-warning tabing">Register a Pet</button>
+</div>
+<div class="tab" id="tab1" style="display: none">
+    <div class="col-md-12">
+        <div class="alert alert-primary" role="alert" style="margin: 0;">
+            <div class="row">
+                <div class="col-sm-8">
+                    All Pets List
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control filterWord" placeholder="Filter"/>
+                </div>
+            </div>
+        </div>
+
+        <table border="2" class="table table-striped table-dark">
+
+            <tr class="visiblefilter">
+                <th scope="col">Name</th>
+                <th scope="col">Age</th>
+                <th scope="col">Type</th>
+                <th scope="col">Genus</th>
+                <th scope="col">Description</th>
+                <th scope="col">Owner</th>
+            </tr>
+            <!--/*@thymesVar id="pets" type="com.example.demo.model.Pets"*/-->
+            <tr th:each="pets : ${pets}" th:id="${pets.id}" class="bodyy" >
+
+                <td th:text="${pets.isim}" ></td>
+                <td th:text="${pets.yas}" ></td>
+                <td th:text="${pets.tur}" ></td>
+                <td th:text="${pets.cins}" ></td>
+                <td th:text="${pets.aciklama}" ></td>
+                <td th:text="${pets.user}" ></td>
+
+            </tr>
+
+        </table>
+    </div>
+</div>
+<div class="tab" id="tab2" style="display: none">
+    <div class="col-md-12">
+        <div class="alert alert-success" role="alert" style="margin: 0;">
+            My Pets List
+        </div>
+
+        <table id="editTable" border="2" class="table table-striped table-dark">
+
+            <tr class="visiblefilter">
+                <th scope="col">Name</th>
+                <th scope="col">Age</th>
+                <th scope="col">Type</th>
+                <th scope="col">Genus</th>
+                <th scope="col">Description</th>
+                <th scope="col"><input type="text" class="form-control filterWord" placeholder="Filter"/></th>
+            </tr>
+            <!--/*@thymesVar id="pets" type="com.example.demo.model.Pets"*/-->
+            <tr th:each="pets : ${pets}" th:if="${pets.user}==${#httpServletRequest.remoteUser}" th:id="${pets.id}" class="bodyy" >
+
+                <td th:text="${pets.isim}" ></td>
+                <td th:text="${pets.yas}" ></td>
+                <td th:text="${pets.tur}" ></td>
+                <td th:text="${pets.cins}" ></td>
+                <td th:text="${pets.aciklama}" ></td>
+                <td >
+                    <button type="button" th:data-id="${pets.id}" data-toggle="modal" data-target="#updateModal" class="btn btn-outline-success update">Update</button>
+                    <button type="button" th:data-id="${pets.id}" data-toggle="modal" data-target="#deleteModal" class="btn btn-outline-danger delete">Delete</button>
+                </td>
+
+            </tr>
+
+        </table>
+    </div>
+</div>
+<div class="tab" id="tab3" style="display: none">
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <form th:action="@{/second}"  method="POST" enctype="utf8" class="form-horizontal" >
+                <div class="form-group">
+                    <input type="text" name="petTur" placeholder="Tür" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="petCins" placeholder="Cins" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="petIsim" placeholder="İsim" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <input type=number name="petYas" placeholder="Yaş" class="form-control"/>
+                </div>
+                <div class="form-group">
+
+                    <input type="text" name="petAciklama" placeholder="Açıklama" class="form-control"/>
+                    <!--<p th:text="${error}">Validation error</p>-->
+                </div>
+                <h2 id="getUserEmail" th:inline="text" hidden>[[${#httpServletRequest.remoteUser}]]</h2>
+                <input type="text" id="petUserText" name="petUser" value="email" class="form-control" hidden/>
+
+                <br>
+                <input type="submit" class="regButton" id="reg" value="Register" />
+            </form>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Update</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/updatePet}"  method="POST" enctype="utf8" class="form-horizontal" >
+                    <div class="form-group row">
+                        <label for="petTur" class="col-sm-2 col-form-label">Tür</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="petTur" name="petTur" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="petCins" class="col-sm-2 col-form-label">Cins</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="petCins" name="petCins" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="petIsim" class="col-sm-2 col-form-label">İsim</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="petIsim" name="petIsim" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="petYas" class="col-sm-2 col-form-label">Yaş</label>
+                        <div class="col-sm-10">
+                            <input type="number" id="petYas" name="petYas" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="petAciklama" class="col-sm-2 col-form-label">Açıklama</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="petAciklama" name="petAciklama" class="form-control"/>
+                        </div>
+                    </div>
+
+                    <input type="text" id="petId" name="petId" value="0" class="form-control" hidden/>
+                    <hr>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <input type="submit" class="regButton" id="reg2" value="Update" style="font-size: 17px;"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="example">Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Do you want to delete ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger deleteOkey">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+        var deleted = "0";
+        $('.tabing').on("click", function () {
+            $('.tab').css("display", "none");
+            $('#'+ $(this).data('tab')).css("display", "block");
+        });
+
+        $('#petUserText').val($('#getUserEmail').text());
+
+        $('.deleteOkey').on("click", function () {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var id = deleted;
+            $.ajax({
+                type: 'POST',
+                url: '/deletePet',
+                data: {
+
+                    "petId": id
+                },
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                },
+                success: function () {
+                    location.reload();
+                }
+            });
+        });
+
+        $('.delete').on("click", function () {
+            deleted = $(this).data('id');
+        });
+
+        $('.update').on("click", function () {
+            var id = $(this).data('id');
+            $('#petId').val(id);
+
+            var arr = $('#editTable tr[id="'+id+'"]').text().split(/\s+/);
+
+            $('#petTur').val(arr[3]);
+            $('#petCins').val(arr[4]);
+            $('#petIsim').val(arr[1]);
+            $('#petYas').val(arr[2]);
+            $('#petAciklama').val(arr[5]);
+        });
+
+        $(".filterWord").on('input',function(){
+            var val = $(this).val();
+            $("tr").removeClass("nonvisiblefilter").filter(function() {
+                return $(this).text().indexOf(val) == -1;
+            }).addClass( "nonvisiblefilter" );
+        });
+    });
+</script>
+<style>
+    .visiblefilter{
+        display: table-row !important;
+    }
+    .nonvisiblefilter{
+        display: none;
+    }
+
+    .regButton{
+        background-color: white;
+        border-radius: 4px;
+        padding: 5px 20px;
+        font-size: 20px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border: 2px solid #E0A800;
+        float: right;
+    }
+    .call-to-action .overlay {
+        height: 75%;
+    }
+    .outButton{
+        background-color: white;
+        border-radius: 4px;
+        padding: 5px 20px;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border: 2px solid #008CBA;
+    }
+</style>
 </body>
 </html>
