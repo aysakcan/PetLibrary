@@ -1,8 +1,10 @@
 package com.example.demo.Controller;
 
 
+import com.example.demo.model.Pets;
 import com.example.demo.model.Role;
 import com.example.demo.model.Users;
+import com.example.demo.repo.PetRepo;
 import com.example.demo.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,6 +25,9 @@ public class UserController {
     @Autowired
     private UserRepo userRepo;
 
+    @Autowired
+    private PetRepo petRepo;
+
 
 
     @GetMapping("main")
@@ -38,90 +43,46 @@ public class UserController {
             users = userRepo.findAll();
         }
 
+        Iterable<Pets> pets = null;
+        pets = petRepo.findAll();
+        model.addAttribute("pets", pets);
+
         model.addAttribute("users", users);
         return "main";
     }
 
 
-    @PostMapping("/add")
-    public String add(@RequestParam String userCity,
-                      @RequestParam String email,
-                      @RequestParam String name,
-                      @RequestParam String sname,
-                      @RequestParam String role,
+    @PostMapping("/addUser")
+    public String addUser(@RequestParam String userAddress,
+                      @RequestParam String userEmail,
+                      @RequestParam String userPhone,
+                      @RequestParam String userFname,
+                      @RequestParam String userLname,
+                      @RequestParam String userRole,
                       Model model){
 
         Users userrr = new Users();
-        if (!name.isEmpty() && !sname.isEmpty() && !email.isEmpty() && !userCity.isEmpty()) {
-            userrr.setUserEmail(email);
-            userrr.setUserFirstName(name);
-            userrr.setUserLastName(sname);
-            userrr.setUserCity(userCity);
+        if (!userFname.isEmpty() && !userLname.isEmpty() && !userEmail.isEmpty() && !userAddress.isEmpty()) {
+            userrr.setUserEmail(userEmail);
+            userrr.setUserPhone(userPhone);
+            userrr.setUserFirstName(userFname);
+            userrr.setUserLastName(userLname);
+            userrr.setUserAddress1(userAddress);
             userrr.setActive(false);
-            if (role.equals("Admin")){userrr.setRoles(Collections.singleton(Role.ADMIN));}else {userrr.setRoles(Collections.singleton(Role.USER));}
+            if (userRole.equals("Admin")){userrr.setRoles(Collections.singleton(Role.ADMIN));}else {userrr.setRoles(Collections.singleton(Role.USER));}
 
             userRepo.save(userrr);
         }
-      name = null;
-        sname = null;
-        email = null;
-        userCity = null;
+        userFname = null;
+        userLname = null;
+        userEmail = null;
+        userAddress = null;
 
         return "redirect:/main";
     }
 
-
-    @PostMapping("/updatecity")
-    public String updateCity(@RequestParam String userCity,@RequestParam String userId,Model model){
-        Users user = null;
-        if (!userId.isEmpty() && !userCity.isEmpty()) {
-
-            user = userRepo.findById(Integer.parseInt(userId));
-            user.setUserCity(userCity);
-            userRepo.save(user);
-            model.addAttribute("message","User updated!");
-
-        }else {
-            model.addAttribute("message", "User isn't updated!");
-        }
-        model.addAttribute("users",user);
-        return "main";
-    }
-    @PostMapping("/updatename")
-    public String updateName(@RequestParam String userName,@RequestParam String userSurName,@RequestParam String userId,Model model){
-        Users user = null;
-        if (!userId.isEmpty() && !userName.isEmpty() && !userSurName.isEmpty()) {
-
-             user = userRepo.findById(Integer.parseInt(userId));
-            user.setUserFirstName(userName);
-            user.setUserLastName(userSurName);
-            userRepo.save(user);
-            model.addAttribute("message","User updated!");
-
-        }else {
-            model.addAttribute("message", "User isn't updated!");
-        }
-        model.addAttribute("users",user);
-        return "main";
-    }
-    @PostMapping("/updateEmail")
-    public String updateEmail(@RequestParam String useremail,@RequestParam String userId,Model model){
-        Users user = null;
-        if (!userId.isEmpty() && !useremail.isEmpty()) {
-
-            user = userRepo.findById(Integer.parseInt(userId));
-            user.setUserEmail(useremail);
-            userRepo.save(user);
-            model.addAttribute("message","User updated!");
-
-        }else {
-            model.addAttribute("message", "User isn't updated!");
-        }
-        model.addAttribute("users",user);
-        return "main";
-    }
-    @PostMapping("/delete")
-    public String updateEmail(@RequestParam String userId,Map<String,Object> model){
+    @PostMapping("/deleteUser")
+    public String deleteUser(@RequestParam String userId,Map<String,Object> model){
         if (!userId.isEmpty()) {
             Users user = userRepo.findById(Integer.parseInt(userId));
 
@@ -134,6 +95,96 @@ public class UserController {
         return "main";
     }
 
+    @PostMapping("/updateUser")
+    public String updateUser(@RequestParam String userAddress,
+                             @RequestParam String userPhone,
+                             @RequestParam String userFname,
+                             @RequestParam String userLname,
+                             @RequestParam String userId,
+                             Model model){
+        Users temp = null;
+        if (!userId.isEmpty() ) {
+            temp = userRepo.findById(Integer.parseInt(userId));
+            temp.setUserFirstName(userFname);
+            temp.setUserLastName(userLname);
+            temp.setUserPhone(userPhone);
+            temp.setUserAddress1(userAddress);
+
+            userRepo.save(temp);
+            model.addAttribute("message","User updated!");
+
+        }else {
+            model.addAttribute("message", "User isn't updated!");
+        }
+        return "redirect:/main";
+    }
+
+    @PostMapping("/addPet")
+    public String addPet(@RequestParam String petIsim,
+                         @RequestParam String petTur,
+                         @RequestParam String petCins,
+                         @RequestParam String petAciklama,
+                         @RequestParam String petYas,
+                         @RequestParam String petUser,
+                         Map<String, Object> model) {
+
+        Pets temp = new Pets();
+        temp.setIsim(petIsim);
+        temp.setTur(petTur);
+        temp.setCins(petCins);
+        temp.setAciklama(petAciklama);
+        temp.setYas(Integer.parseInt(petYas));
+        temp.setUser(petUser);
+        petRepo.save(temp);
+        petIsim = null;
+        petTur = null;
+        petCins = null;
+        petAciklama = null;
+        petYas = null;
+        petUser = null;
+
+        return "redirect:/main";
+    }
+
+    @PostMapping("/deletePetfromAdmin")
+    public String deletePet(@RequestParam(required = false, defaultValue = "") String petId,Map<String,Object> model){
+        if (!petId.isEmpty()) {
+            Pets pet = petRepo.findById(Integer.parseInt(petId));
+
+            petRepo.delete(pet);
+            model.put("message","Pet Deleted!");
+
+        }else {
+            model.put("message", "Pet isn't Deleted!");
+        }
+        return "main";
+    }
+
+    @PostMapping("/updatePetfromAdmin")
+    public String updatePet(@RequestParam String petIsim,
+                             @RequestParam String petTur,
+                             @RequestParam String petCins,
+                             @RequestParam String petAciklama,
+                             @RequestParam String petYas,
+                             @RequestParam String petId,
+                             Model model){
+        Pets temp = null;
+        if (!petId.isEmpty() ) {
+            temp = petRepo.findById(Integer.parseInt(petId));
+            temp.setIsim(petIsim);
+            temp.setTur(petTur);
+            temp.setCins(petCins);
+            temp.setAciklama(petAciklama);
+            temp.setYas(Integer.parseInt(petYas));
+
+            petRepo.save(temp);
+            model.addAttribute("message","Pet updated!");
+
+        }else {
+            model.addAttribute("message", "Pet isn't updated!");
+        }
+        return "redirect:/main";
+    }
 
 
 }

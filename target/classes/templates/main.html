@@ -34,6 +34,24 @@
         cursor: pointer;
         border: 2px solid #008CBA;
     }
+
+    .visiblefilter{
+        display: table-row !important;
+    }
+    .nonvisiblefilter{
+        display: none;
+    }
+
+    .regButton{
+        background-color: white;
+        border-radius: 4px;
+        padding: 5px 20px;
+        font-size: 20px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border: 2px solid #E0A800;
+        float: right;
+    }
 </style>
 <nav class="navbar navbar-light bg-light static-top">
     <div class="container">
@@ -59,209 +77,429 @@
         </div>
     </div>
 </section>
-<div class="modal-body row">
-    <div class="col-md-6">
-        <div class="alert alert-primary" role="alert" style="margin: 0;">
-            Add New User
-        </div>
-        <form method="post" th:action="@{/add}">
 
-            <input type="text" class="form-control" name="name" placeholder="write FirstName" />
-            <input type="text" class="form-control" name="sname" placeholder="write LastName" />
-            <input type="email" class="form-control" name="email" placeholder="write Email" />
-            <input type="text" class="form-control" name="userCity" placeholder="write City" />
-            <label class="form-check-label" style="padding-right: 30px;">Admin &nbsp;</label><input type="radio" class="form-check-input" name="role" value="Admin">
-            <label class="form-check-label" style="padding-right: 30px;">User &nbsp;</label><input type="radio" class="form-check-input" name="role" value="User">
-            <input type="submit" class="btn btn-success" style="width: 100%!important;" value="ADD"/>
-        </form>
+<div class="row" style="text-align: center; margin-bottom: 20px;">
+    <div class="col-md-6">
+        <button type="button" data-tab="tab1" class="btn btn-lg btn-primary tabing">Show All Pets</button>
+        <button type="button" data-tab="tab2" class="btn btn-lg btn-warning tabing">Register a Pet</button>
     </div>
     <div class="col-md-6">
-        <div class="alert alert-primary" role="alert" style="margin: 0;">
-            Find From Users
-        </div>
-        <form method="get" action="/main" >
-            <div class="row">
-                <div class="col-md-6">
-                    <input type="text" class="form-control" name="name" placeholder="Find" />
-                </div>
-                <div class="col-md-6">
-                    <select id="selectType" class="form-control">
-                        <option value="first">First Name</option>
-                        <option value="last">Last Name</option>
-                    </select>
-                    <input type="hidden" id="selectinput" class="form-control" name="type" value="first"/>
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-success" style="width: 100%!important;">Search</button>
-        </form>
+        <button type="button" data-tab="tab3" class="btn btn-lg btn-success tabing">Show All Users</button>
+        <button type="button" data-tab="tab4" class="btn btn-lg btn-danger tabing">Register a User</button>
     </div>
 </div>
-<div class="modal-body row">
-    <div class="col-md-6">
-        <div class="alert alert-danger" role="alert" style="margin: 0;">
-            Users List
+
+<div class="tab" id="tab1" style="display: none">
+    <div class="col-md-12">
+        <div class="alert alert-primary" role="alert" style="margin: 0;">
+            <div class="row">
+                <div class="col-sm-8">
+                    All Pets List
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control filterWord filterpet" placeholder="Filter"/>
+                </div>
+            </div>
         </div>
 
-        <table border="2" class="table table-striped table-dark">
+        <table id="editTablePet" border="2" class="table table-striped table-dark">
 
-            <tr>
-                <th scope="col">User</th>
-                <th scope="col">City</th>
-                <th scope="col">Email</th>
+            <tr class="visiblefilter">
+                <th scope="col">Name</th>
+                <th scope="col">Age</th>
+                <th scope="col">Type</th>
+                <th scope="col">Genus</th>
+                <th scope="col">Description</th>
+                <th scope="col">Owner</th>
+                <th scope="col"></th>
             </tr>
-            <!--/*@thymesVar id="users" type="com.example.demo.model.Users"*/-->
-            <tr th:each="users : ${users}" th:id="${users.id}" class="bodyy" >
+            <!--/*@thymesVar id="pets" type="com.example.demo.model.Pets"*/-->
+            <tr th:each="pets : ${pets}" th:id="${pets.id}" class="bodyy" data-group="pet" >
 
-                <td th:text="${users.userFirstName}+' '+${users.userLastName}" class="name"></td>
-                <td th:text="${users.userCity}" class="city" ></td>
-                <td th:text="${users.userEmail}" class="email"></td>
-                <td class="delete"><button type="button" class="btn btn-outline-danger">Delete</button></td>
-
+                <td th:text="${pets.isim}" ></td>
+                <td th:text="${pets.yas}" ></td>
+                <td th:text="${pets.tur}" ></td>
+                <td th:text="${pets.cins}" ></td>
+                <td th:text="${pets.aciklama}" ></td>
+                <td th:text="${pets.user}" ></td>
+                <td >
+                    <button type="button" th:data-id="${pets.id}" data-toggle="modal" data-target="#updateModalPet" class="btn btn-outline-success updatePet">Update</button>
+                    <button type="button" th:data-id="${pets.id}" data-toggle="modal" data-target="#deleteModalPet" class="btn btn-outline-danger deletePet">Delete</button>
+                </td>
 
             </tr>
+
         </table>
     </div>
-    <div class="col-md-6">
-        <!--Change User Name-->
-        <div id="changeName" class="alert alert-info" role="alert" style="display: none;">
-            <div class="input-group input-group-lg">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" >FirstName</span>
+</div>
+<div class="tab" id="tab2" style="display: none">
+    <div class="col-md-12">
+        <div class="alert alert-warning" role="alert" style="margin: 0;">
+            <div class="row">
+                <div class="col-sm-8">
+                    Register a Pet
                 </div>
-                <input type="text" id="userName" placeholder="UserFirstName"/>
             </div>
-            <div class="input-group input-group-lg">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" >LastName</span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <form th:action="@{/addPet}"  method="POST" class="form-horizontal" >
+                <div class="form-group row">
+                    <label for="petTur" class="col-sm-3 col-form-label">Type</label>
+                    <div class="col-sm-9">
+                        <input type="text" id="petTur" name="petTur" class="form-control"/>
+                    </div>
                 </div>
-                <input type="text" id="userSurName" placeholder="UserLastName"/>
+                <div class="form-group row">
+                    <label for="petCins" class="col-sm-3 col-form-label">Genus</label>
+                    <div class="col-sm-9">
+                        <input type="text" id="petCins" name="petCins" class="form-control"/>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="petIsim" class="col-sm-3 col-form-label">Name</label>
+                    <div class="col-sm-9">
+                        <input type="text" id="petIsim" name="petIsim" class="form-control"/>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="petYas" class="col-sm-3 col-form-label">Age</label>
+                    <div class="col-sm-9">
+                        <input type="number" id="petYas" name="petYas" class="form-control"/>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="petAciklama" class="col-sm-3 col-form-label">Description</label>
+                    <div class="col-sm-9">
+                        <input type="text" id="petAciklama" name="petAciklama" class="form-control"/>
+                    </div>
+                </div>
+
+                <h2 id="getUserEmail" th:inline="text" hidden>[[${#httpServletRequest.remoteUser}]]</h2>
+                <input type="text" id="petUserText" name="petUser" value="email" class="form-control" hidden/>
+
+                <br>
+                <input type="submit" class="regButton" id="reg" value="Register" />
+            </form>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+</div>
+<div class="tab" id="tab3" style="display: none">
+    <div class="col-md-12">
+        <div class="alert alert-success" role="alert" style="margin: 0;">
+            <div class="row">
+                <div class="col-sm-8">
+                    All Users List
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control filterWord filteruser" placeholder="Filter"/>
+                </div>
             </div>
-            <button type="button" id="updateName" class="btn btn-secondary"onclick="updateName($('#userName').val(),$('#userSurName').val())">Update</button>
-            <button type="button" id="closeName" class="btn btn-secondary" onclick="$('#changeName').css('display','none')">Close</button>
         </div>
 
-        <!--=====================================-->
-        <!--Change User Email-->
-        <div id="changeEmail" class="alert alert-info" role="alert" style="display: none;">
-            <div class="input-group input-group-lg">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" >UserEmail</span>
-                </div>
-                <input type="text" id="userEmail" placeholder="UserEmail"/>
-            </div>
-            <button type="button" id="updateEmail" class="btn btn-secondary"onclick="updateEmail($('#userEmail').val())">Update</button>
-            <button type="button" id="closeEmail" class="btn btn-secondary" onclick="$('#changeEmail').css('display','none')">Close</button>
-        </div>
-        <!--=====================================-->
-        <!--Change User Name-->
-        <div id="changeCity" class="alert alert-info" role="alert" style="display: none;">
-            <div class="input-group input-group-lg">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" >City</span>
-                </div>
-                <input type="text" id="userCity" placeholder="UserCity"/>
-            </div>
+        <table id="editTableUser" border="2" class="table table-striped table-dark">
 
-            <button type="button" id="updateCity" class="btn btn-secondary">Update</button>
-            <button type="button" id="closeCity" class="btn btn-secondary" onclick="$('#changeCity').css('display','none')">Close</button>
-        </div>
-        <!--=====================================-->
+            <tr class="visiblefilter">
+                <th scope="col">First Name</th>
+                <th scope="col">Last Name</th>
+                <th scope="col">Phone</th>
+                <th scope="col">Address</th>
+                <th scope="col">Email</th>
+                <th scope="col"></th>
+            </tr>
+            <!--/*@thymesVar id="users" type="com.example.demo.model.Users"*/-->
+            <tr th:each="users : ${users}" th:id="${users.id}" class="bodyy" data-group="user"  >
 
+                <td th:text="${users.userFirstName}" ></td>
+                <td th:text="${users.userLastName}" ></td>
+                <td th:text="${users.userPhone}" ></td>
+                <td th:text="${users.userAddress1}" ></td>
+                <td th:text="${users.userEmail}" ></td>
+                <td >
+                    <button type="button" th:data-id="${users.id}" data-toggle="modal" data-target="#updateModalUser" class="btn btn-outline-success updateUser">Update</button>
+                    <button type="button" th:data-id="${users.id}" data-toggle="modal" data-target="#deleteModalUser" class="btn btn-outline-danger deleteUser">Delete</button>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+</div>
+<div class="tab" id="tab4" style="display: none">
+    <div class="col-md-12">
+        <div class="alert alert-danger" role="alert" style="margin: 0;">
+            <div class="row">
+                <div class="col-sm-8">
+                    Register a User
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <form th:action="@{/addUser}"  method="POST" class="form-horizontal" >
+                <div class="form-group row">
+                    <label for="userFname" class="col-sm-3 col-form-label">First Name</label>
+                    <div class="col-sm-9">
+                        <input type="text" id="userFname" name="userFname" class="form-control"/>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="userLname" class="col-sm-3 col-form-label">Last Name</label>
+                    <div class="col-sm-9">
+                        <input type="text" id="userLname" name="userLname" class="form-control"/>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="userEmail" class="col-sm-3 col-form-label">Email</label>
+                    <div class="col-sm-9">
+                        <input type="email" id="userEmail" name="userEmail" class="form-control"/>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="userAddress" class="col-sm-3 col-form-label">Address</label>
+                    <div class="col-sm-9">
+                        <input type="text" id="userAddress" name="userAddress" class="form-control"/>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="userPhone" class="col-sm-3 col-form-label">Phone</label>
+                    <div class="col-sm-9">
+                        <input type="number" id="userPhone" name="userPhone" class="form-control"/>
+                    </div>
+                </div>
+
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label">Admin &nbsp;</label><input type="radio" class="form-check-input" name="userRole" value="Admin">
+                    <label class="form-check-label">User &nbsp;</label><input type="radio" class="form-check-input" name="userRole" value="User">
+                </div>
+
+                <input type="submit" class="regButton" id="regUSer" value="Register" />
+            </form>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateModalPet" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Update</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/updatePetfromAdmin}"  method="POST" class="form-horizontal" >
+                    <div class="form-group row">
+                        <label for="petTur" class="col-sm-3 col-form-label">Type</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="petTur2" name="petTur" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="petCins" class="col-sm-3 col-form-label">Genus</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="petCins2" name="petCins" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="petIsim" class="col-sm-3 col-form-label">Name</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="petIsim2" name="petIsim" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="petYas" class="col-sm-3 col-form-label">Age</label>
+                        <div class="col-sm-9">
+                            <input type="number" id="petYas2" name="petYas" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="petAciklama" class="col-sm-3 col-form-label">Description</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="petAciklama2" name="petAciklama" class="form-control"/>
+                        </div>
+                    </div>
+
+                    <input type="text" id="petId" name="petId" value="0" class="form-control" hidden/>
+                    <hr>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <input type="submit" class="regButton" id="reg2" value="Update" style="font-size: 17px;"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="deleteModalPet" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="example">Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Do you want to delete ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger deleteOkeyPet">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateModalUser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel2">Update</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/updateUser}"  method="POST" class="form-horizontal" >
+                    <div class="form-group row">
+                        <label for="userFname2" class="col-sm-3 col-form-label">First Name</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="userFname2" name="userFname" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="userLname2" class="col-sm-3 col-form-label">Last Name</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="userLname2" name="userLname" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="userPhone2" class="col-sm-3 col-form-label">Phone</label>
+                        <div class="col-sm-9">
+                            <input type="number" id="userPhone2" name="userPhone" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="userAddress2" class="col-sm-3 col-form-label">Address</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="userAddress2" name="userAddress" class="form-control"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="userEmail2" class="col-sm-3 col-form-label">Email</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="userEmail2" name="userEmail" class="form-control" disabled/>
+                        </div>
+                    </div>
+
+                    <input type="text" id="userId" name="userId" value="0" class="form-control" hidden/>
+                    <hr>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <input type="submit" class="regButton" id="reg3" value="Update" style="font-size: 17px;"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="deleteModalUser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="example1">Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Do you want to delete ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger deleteOkeyUser">Delete</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
 
-    $(document).ready(function() {
-        /*$("tr").not(':first').hover(function(){$(".delete").css("display", "block")},
-            function(){$(".delete").css("display", "none")});*/
-        $(".name").click(function () {
-            var id = this.parentNode.id;
-            $("#updateName").click(function () {
-                var token = $("meta[name='_csrf']").attr("content");
-                var header = $("meta[name='_csrf_header']").attr("content");
-                var name = $("#userName").val();
-                var sname = $("#userSurName").val();
-                $.ajax
-                ({
-                    url: '/updatename',
-                    data: {
-                        "userName": name,
-                        "userSurName": sname,
-                        "userId": id
-                    },
-                    type: 'post',
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader(header, token);
-                    },
-                    success: function () {
-                        $("#changeName").css("display", "none");
-                        location.reload();
-                    }
-                });
-            });
-            $("#changeName").css("display", "block");
-        });
-        $(".city").click(function () {
-            var token = $("meta[name='_csrf']").attr("content");
-            var header = $("meta[name='_csrf_header']").attr("content");
-            var id = this.parentNode.id;
-            $("#updateCity").click(function () {
-                var city = $("#userCity").val();
-                $.ajax
-                ({
-                    url: '/updatecity',
-                    data: {
-                        "userCity": city,
-                        "userId": id
-                    },
-                    type: 'post',
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader(header, token);
-                    },
-                    success: function () {
-                        $("#changeCity").css("display", "none");
-                        location.reload();
-                    }
-                });
-            });
-            $("#changeCity").css("display", "block");
-        });
-        $(".email").click(function () {
-            var token = $("meta[name='_csrf']").attr("content");
-            var header = $("meta[name='_csrf_header']").attr("content");
-            var id = this.parentNode.id;
-            $("#updateEmail").click(function () {
-                var email = $("#userEmail").val();
-                $.ajax
-                ({
-                    url: '/updateEmail',
-                    data: {
-                        "useremail": email,
-                        "userId": id
-                    },
-                    type: 'post',
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader(header, token);
-                    },
-                    success: function () {
-                        $("#changeEmail").css("display", "none");
-                        location.reload();
-                    }
-                });
-            });
-            $("#changeEmail").css("display", "block");
+    $(document).ready(function(){
+        $('.tabing').on("click", function () {
+            $('.tab').css("display", "none");
+            $('#'+ $(this).data('tab')).css("display", "block");
         });
 
-        $(".delete").click(function () {
+        $('#petUserText').val($('#getUserEmail').text());
+
+        $(".filterpet").on('input',function(){
+            var val = $(this).val();
+            $("tr[data-group=pet]").removeClass("nonvisiblefilter").filter(function() {
+                return $(this).text().indexOf(val) == -1;
+            }).addClass( "nonvisiblefilter" );
+        });
+
+        $(".filteruser").on('input',function(){
+            var val = $(this).val();
+            $("tr[data-group=user]").removeClass("nonvisiblefilter").filter(function() {
+                return $(this).text().indexOf(val) == -1;
+            }).addClass( "nonvisiblefilter" );
+        });
+
+        var deletedPet = "0";
+
+        $('.deleteOkeyPet').on("click", function () {
             var token = $("meta[name='_csrf']").attr("content");
             var header = $("meta[name='_csrf_header']").attr("content");
-            var id = this.parentNode.id;
-            $.ajax
-            ({
+            var id = deletedPet;
+            $.ajax({
                 type: 'POST',
-                url: '/delete',
+                url: '/deletePetfromAdmin',
+                data: {
+
+                    "petId": id
+                },
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                },
+                success: function () {
+                    location.reload();
+                }
+            });
+        });
+
+        $('.deletePet').on("click", function () {
+            deletedPet = $(this).data('id');
+        });
+
+        $('.updatePet').on("click", function () {
+            var id = $(this).data('id');
+            $('#petId').val(id);
+
+            var arr = $('#editTablePet tr[id="'+id+'"]').text().split(/\s+/);
+
+            $('#petTur2').val(arr[3]);
+            $('#petCins2').val(arr[4]);
+            $('#petIsim2').val(arr[1]);
+            $('#petYas2').val(arr[2]);
+            $('#petAciklama2').val(arr[5]);
+        });
+
+        var deletedUser = "0";
+
+        $('.deleteOkeyUser').on("click", function () {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var id = deletedUser;
+            $.ajax({
+                type: 'POST',
+                url: '/deleteUser',
                 data: {
 
                     "userId": id
@@ -270,15 +508,27 @@
                     xhr.setRequestHeader(header, token);
                 },
                 success: function () {
-                    $(".delete").css("display", "none");
                     location.reload();
                 }
             });
         });
-    });
 
-    $(document).on('change','#selectType',function(){
-        $( "#selectinput" ).val($( "#selectType option:selected" ).val());
+        $('.deleteUser').on("click", function () {
+            deletedUser = $(this).data('id');
+        });
+
+        $('.updateUser').on("click", function () {
+            var id = $(this).data('id');
+            $('#userId').val(id);
+
+            var arr = $('#editTableUser tr[id="'+id+'"]').text().split(/\s+/);
+
+            $('#userFname2').val(arr[1]);
+            $('#userLname2').val(arr[2]);
+            $('#userPhone2').val(arr[3]);
+            $('#userAddress2').val(arr[4]);
+            $('#userEmail2').val(arr[5]);
+        });
     });
 
 </script>
