@@ -34,7 +34,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .formLogin()
                     .loginPage("/login")
                     .permitAll()
-                .and().exceptionHandling().accessDeniedPage("/accessdenied")
+                .and()
+                    .exceptionHandling()
+                    .accessDeniedPage("/accessdenied")
                 .and()
                     .logout()
                     .permitAll();

@@ -20,18 +20,22 @@
 <nav class="navbar navbar-light bg-light static-top">
     <div class="container">
         <a class="navbar-brand" href="/">App Name</a>
-        <a class="btn btn-primary" href="/registration">Registration</a>
+        <form th:action="@{/logout}" method="post">
+            <input type="submit" class="outButton" value="Sign Out"/>
+        </form>
     </div>
 </nav>
+<form method="get" action="/second" style="display: none">
+    <input type="text" id="userEmailing" class="form-control" name="email" value="" />
+    <button type="submit" class="btn btn-success" id="findUser" style="width: 100%!important;">Search</button>
+</form>
 <section class="call-to-action text-white text-center" style="margin-bottom: 30px;">
     <div class="overlay"></div>
     <div class="container">
         <div class="row">
             <div class="col-xl-9 mx-auto">
                 <h2 class="mb-4" th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h2>
-                <form th:action="@{/logout}" method="post">
-                    <input type="submit" class="outButton" value="Sign Out"/>
-                </form>
+                <button type="button" class="btn btn-lg btn-primary" id="userButton">Profile</button>
             </div>
         </div>
     </div>
@@ -219,8 +223,73 @@
     </div>
 </div>
 
-<script>
+<div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="example1">Update</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h2 class="mb-4" >
+                    <form th:action="@{/updatePerson}"  method="POST" class="form-horizontal" style="font-size: 18px;">
+                        <div class="form-group row">
+                            <label for="userFname2" class="col-sm-3 col-form-label">First Name</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="userFname2" name="userFname" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="userLname2" class="col-sm-3 col-form-label">Last Name</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="userLname2" name="userLname" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="userPhone2" class="col-sm-3 col-form-label">Phone</label>
+                            <div class="col-sm-9">
+                                <input type="number" id="userPhone2" name="userPhone" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="userAddress2" class="col-sm-3 col-form-label">Address</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="userAddress2" name="userAddress" class="form-control"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="userEmail2" class="col-sm-3 col-form-label">Email</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="userEmail2" name="userEmail" class="form-control" disabled/>
+                            </div>
+                        </div>
+
+                        <input type="text" id="userId" name="userId" value="0" class="form-control" hidden/>
+                        <hr>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <input type="submit" class="regButton" id="reg3" value="Update" style="font-size: 17px;"/>
+                    </form>
+                </h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
     $(document).ready(function(){
+        /*<![CDATA[*/
+
+        $('#userFname2').val(/*[[${user.getUserFirstName()}]]*/'${user.getUserFirstName()}');
+        $('#userLname2').val(/*[[${user.getUserLastName()}]]*/'${user.getUserLastName()}');
+        $('#userPhone2').val(/*[[${user.getUserPhone()}]]*/'${user.getUserPhone()}');
+        $('#userAddress2').val(/*[[${user.getUserAddress1()}]]*/'${user.getUserAddress1()}');
+        $('#userEmail2').val(/*[[${user.getUserEmail()}]]*/'${user.getUserEmail()}');
+        $('#userId').val(/*[[${user.getId()}]]*/'${user.getId()}');
+        /*]]>*/
+
         var deleted = "0";
         $('.tabing').on("click", function () {
             $('.tab').css("display", "none");
@@ -257,13 +326,13 @@
             var id = $(this).data('id');
             $('#petId').val(id);
 
-            var arr = $('#editTable tr[id="'+id+'"]').text().split(/\s+/);
+            var arr = $('#editTable tr[id="'+id+'"]').text().split(/\n/);
 
-            $('#petTur').val(arr[3]);
-            $('#petCins').val(arr[4]);
-            $('#petIsim').val(arr[1]);
-            $('#petYas').val(arr[2]);
-            $('#petAciklama').val(arr[5]);
+            $('#petIsim').val($.trim(arr[2]));
+            $('#petYas').val($.trim(arr[3]));
+            $('#petTur').val($.trim(arr[4]));
+            $('#petCins').val($.trim(arr[5]));
+            $('#petAciklama').val($.trim(arr[6]));
         });
 
         $(".filterWord").on('input',function(){
@@ -271,6 +340,10 @@
             $("tr").removeClass("nonvisiblefilter").filter(function() {
                 return $(this).text().indexOf(val) == -1;
             }).addClass( "nonvisiblefilter" );
+        });
+
+        $('#userButton').on("click", function () {
+           $('#userModal').modal('show');
         });
     });
 </script>

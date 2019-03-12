@@ -56,7 +56,9 @@
 <nav class="navbar navbar-light bg-light static-top">
     <div class="container">
         <a class="navbar-brand" href="/">App Name</a>
-        <a class="btn btn-primary" href="/registration">Registration</a>
+        <form th:action="@{/logout}" method="post">
+            <input type="submit" class="outButton" value="Sign Out"/>
+        </form>
     </div>
 </nav>
 <section class="call-to-action text-white text-center" style="margin-bottom: 30px;">
@@ -70,9 +72,6 @@
                     </th:block>
                 </h2>
                 <a class="btn btn-primary" href="/second">User Page</a>
-                <form th:action="@{/logout}" method="post">
-                    <input type="submit" class="outButton" value="Sign Out"/>
-                </form>
             </div>
         </div>
     </div>
@@ -482,13 +481,13 @@
             var id = $(this).data('id');
             $('#petId').val(id);
 
-            var arr = $('#editTablePet tr[id="'+id+'"]').text().split(/\s+/);
+            var arr = $('#editTablePet tr[id="'+id+'"]').text().split(/\n/);
 
-            $('#petTur2').val(arr[3]);
-            $('#petCins2').val(arr[4]);
-            $('#petIsim2').val(arr[1]);
-            $('#petYas2').val(arr[2]);
-            $('#petAciklama2').val(arr[5]);
+            $('#petIsim2').val($.trim(arr[2]));
+            $('#petYas2').val($.trim(arr[3]));
+            $('#petTur2').val($.trim(arr[4]));
+            $('#petCins2').val($.trim(arr[5]));
+            $('#petAciklama2').val($.trim(arr[6]));
         });
 
         var deletedUser = "0";
@@ -521,13 +520,13 @@
             var id = $(this).data('id');
             $('#userId').val(id);
 
-            var arr = $('#editTableUser tr[id="'+id+'"]').text().split(/\s+/);
+            var arr = $('#editTableUser tr[id="'+id+'"]').text().split(/\n/);
 
-            $('#userFname2').val(arr[1]);
-            $('#userLname2').val(arr[2]);
-            $('#userPhone2').val(arr[3]);
-            $('#userAddress2').val(arr[4]);
-            $('#userEmail2').val(arr[5]);
+            $('#userFname2').val($.trim(arr[2]));
+            $('#userLname2').val($.trim(arr[3]));
+            $('#userPhone2').val($.trim(arr[4]));
+            $('#userAddress2').val($.trim(arr[5]));
+            $('#userEmail2').val($.trim(arr[6]));
         });
     });
 
